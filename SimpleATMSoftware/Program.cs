@@ -19,6 +19,8 @@ using BankLibrary;
 Console.WriteLine("Welcome to our Simple ATM Software!\n");
 
 bool run = true;
+int transactionCount = 0;
+decimal withdrawTotal = 0;
 List<BankAccount> allBankAccounts = new List<BankAccount>();
 
 allBankAccounts.Add(new BankAccount("1234567898765432", 1234, "Test", "pass"));
@@ -94,9 +96,7 @@ void Login()
         Console.WriteLine("Login successful");
         GetATMOptions(account);
         break;
-
     }
-
 }
 
 void GetATMOptions(BankAccount account)
@@ -127,10 +127,26 @@ void GetATMOptions(BankAccount account)
                 Console.WriteLine(account.GetAccountHistory());
                 break;
             case 3:
-                withdraw(account);
+                if (transactionCount <= 10)
+                {
+                    withdraw(account);
+                    transactionCount++;
+                } 
+                else
+                {
+                    Console.WriteLine("ERROR: Cannot make more than 10 transactions a day. Try again tomorrow.");
+                }
                 break;
             case 4:
-                deposit(account);
+                if (transactionCount <= 10)
+                {
+                    deposit(account);
+                    transactionCount++;
+                }
+                else
+                {
+                    Console.WriteLine("ERROR: Cannot make more than 10 transactions a day. Try again tomorrow.");
+                }
                 break;
             case 5:
                 return;
@@ -139,11 +155,16 @@ void GetATMOptions(BankAccount account)
                 break;
         }
     }
-    
 }
 
 void withdraw(BankAccount account)
 {
+
+    if (withdrawTotal >= 1000)
+    {
+        Console.WriteLine("Cannot withdraw more than $1000 a day. Try again tomorrow.");
+        return;
+    }
     confirmPin(account);
 
     Console.Write("Enter amount to withdraw: ");
@@ -158,6 +179,7 @@ void withdraw(BankAccount account)
     {
         Console.WriteLine(e.Message);
     }
+    withdrawTotal += amount;
 }
 
 void deposit(BankAccount account)
